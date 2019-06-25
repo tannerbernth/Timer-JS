@@ -1,0 +1,101 @@
+* {
+	box-sizing: border-box;
+	font-family: "Trebuchet MS";
+	margin: 0;
+	padding: 0;
+}
+main {
+	align-items: center;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+}
+
+h1 {
+	font-size: 75px;
+	margin: 75px 75px 37.5px 75px;
+	white-space: nowrap;
+}
+
+h2 {
+	font-size: 55px;
+}
+
+h3 {
+	font-size: 25px;
+}
+
+h3 {
+	font-size: 16px;
+}
+
+.timer {
+	border: 1px solid #000;
+	border-radius: 10px;
+	padding: 2em 8em 2em 8em;
+	position: relative;
+	transition: all .5s ease-in-out;
+}
+
+.running {
+	align-items: center;
+	display: flex;
+	justify-content: center;
+	letter-spacing: 10px;
+	width: 500px;
+}
+
+.running div {
+	align-items: center;
+	display: flex;
+	height: 100%;
+	justify-content: center;
+	width: 33%;
+}
+
+#running_4 div {
+	flex:1;
+	width: 25% !important;
+}
+
+.milliseconds {
+	bottom: 45px;
+	font-size: 13.25px;
+	position: absolute;
+	right: 125px;
+}
+
+.start, .stop, .reset, .lap {
+	align-items: center;
+	border: 2px solid #000;
+	border-radius: 10px;
+	display: flex;
+	height: 75px;
+	justify-content: center;
+	margin: 5px;
+	width: 200px;
+}
+
+.start {
+	background: rgba(0,255,0,.75);
+}
+
+.stop {
+	background: rgba(255,0,0,.75);
+}
+
+.reset {
+	background: rgba(125,125,125,.75);
+}
+
+.lap {
+	background: rgba(255,127,0,.75);
+}
+
+.buttons {
+	display: flex;
+}
+
+.buttons > *:hover {
+	cursor: pointer;
+} 

@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Timer</title>
+<style type="text/css">
+* {
+	box-sizing: border-box;
+	font-family: "Trebuchet MS"; /* Set font here */
+	margin: 0;
+	padding: 0;
+}
+main {
+	align-items: center;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+}
+
+h1 {
+	font-size: 75px;
+	margin: 75px 75px 37.5px 75px;
+	white-space: nowrap;
+}
+
+h2 {
+	font-size: 55px;
+}
+
+h3 {
+	font-size: 25px;
+}
+
+h3 {
+	font-size: 16px;
+}
+
+.timer {
+	border: 1px solid #000;
+	border-radius: 10px;
+	padding: 2em 8em 2em 8em;
+	position: relative;
+	transition: all .5s ease-in-out;
+}
+
+.running {
+	align-items: center;
+	display: flex;
+	justify-content: center;
+	letter-spacing: 10px;
+	width: 500px;
+}
+
+.running div {
+	align-items: center;
+	display: flex;
+	height: 100%;
+	justify-content: center;
+	width: 33%;
+}
+
+#running_4 div {
+	flex:1;
+	width: 25% !important;
+}
+
+.milliseconds {
+	bottom: 45px;
+	font-size: 13.25px;
+	position: absolute;
+	right: 125px;
+}
+
+.start, .stop, .reset, .lap {
+	align-items: center;
+	border: 2px solid #000;
+	border-radius: 10px;
+	display: flex;
+	height: 75px;
+	justify-content: center;
+	margin: 5px;
+	width: 200px;
+}
+
+.start {
+	background: rgba(0,255,0,.75);
+}
+
+.stop {
+	background: rgba(255,0,0,.75);
+}
+
+.reset {
+	background: rgba(125,125,125,.75);
+}
+
+.lap {
+	background: rgba(255,127,0,.75);
+}
+
+.increment {
+	align-items: center;
+	background: rgba(69,69,255,.75);
+	border: 2px solid #000;
+	border-radius: 10px;
+	display: flex;
+	height: 48px;
+	justify-content: center;
+	margin: 5px;
+	width: 128px;
+}
+
+/*.start, .stop, .reset, .increment, .timer, .skill-info {
+	-webkit-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+}*/
+
+.buttons {
+	display: flex;
+}
+
+.buttons > *:hover {
+	cursor: pointer;
+} 
+
+.flash {
+	background: rgba(255,0,0,.3);
+}
+</style>
+</head>
+<body>
+<main>
+	<h1>Timer</h1>
+	<div class="group">
+		<div class="timer">
+			<h2 class="running">
+				<div class="hours">00</div>:
+				<div class="minutes">00</div>:
+				<div class="seconds">00</div>
+			</h2>
+			<div class="milliseconds">:00</div>
+		</div>
+		<div class="buttons">
+			<div class="start">
+				<h3>Start</h3>
+			</div>
+			<div class="stop">
+				<h3>Stop</h3>
+			</div>
+			<div class="reset">
+				<h3>Reset</h3>
+			</div>
+		</div>
+	</div>
+	<div class="group">
+		<div class="timer">
+			<h2 class="running">
+				<div class="hours">00</div>:
+				<div class="minutes">00</div>:
+				<div class="seconds">00</div>
+			</h2>
+			<div class="milliseconds">:00</div>
+		</div>
+		<div class="buttons">
+			<div class="start">
+				<h3>Start</h3>
+			</div>
+			<div class="stop">
+				<h3>Stop</h3>
+			</div>
+			<div class="reset">
+				<h3>Reset</h3>
+			</div>
+			<div class="lap">
+				<h3>Lap</h3>
+			</div>
+		</div>
+		<div class="laps"></div>
+	</div>
+	<div class="group">
+		<div class="timer">
+			<h2 class="running" id="running_4">
+				<div class="days" contenteditable="true">00</div>:
+				<div class="hours" contenteditable="true">00</div>:
+				<div class="minutes" contenteditable="true">00</div>:
+				<div class="seconds" contenteditable="true">00</div>
+			</h2>
+			<div class="milliseconds">:00</div>
+		</div>
+		<div class="buttons">
+			<div class="start">
+				<h3>Start</h3>
+			</div>
+			<div class="stop">
+				<h3>Stop</h3>
+			</div>
+			<div class="reset">
+				<h3>Reset</h3>
+			</div>
+		</div>
+	</div>
+</main>
+<script type="text/javascript">
+// Timer Type Enum
+const TimerType = Object.freeze({"TIMER"		: 1, 
+								  "COUNTDOWN"	: 2, 
+								  "STOPWATCH" 	: 3});
+
+// Timer Class
+class Timer {
+
+	constructor(display, buttons) {
+		// Timer
+		this.display 		= display;
+		this.hours 			= display.querySelector(".hours");
+		this.minutes 		= display.querySelector(".minutes");
+		this.seconds 		= display.querySelector(".seconds");
+		this.milliseconds 	= display.querySelector(".milliseconds");
+
+		// Buttons
+		this.buttons 		= buttons;
+		this.startButton 	= buttons.querySelector(".start");
+		this.stopButton 	= buttons.querySelector(".stop");
+		this.resetButton 	= buttons.querySelector(".reset");
+		this.addButtonListeners();
+
+		// Timer State
+		this.startTime 		= 0; 
+		this.stopTime 		= 0;
+		this.isStopped 		= true;
+	}
+
+	// Timer Methods
+	addButtonListeners() {
+		this.startButton.addEventListener("click", this.start.bind(this));
+		this.stopButton.addEventListener("click", this.stop.bind(this));
+		this.resetButton.addEventListener("click", this.reset.bind(this));
+	}
+	
+	start() {
+		if (this.isStopped) {
+			this.timer = setInterval(this.update.bind(this), 1);
+			this.startTime = Date.now() - this.stopTime;
+			this.isStopped = false;
+		}
+	}
+
+	stop() {
+		if (!this.isStopped) {
+			clearInterval(this.timer);
+			this.stopTime = Date.now() - this.startTime;
+			this.isStopped = true;
+		}
+	}
+
+	reset() {
+		clearInterval(this.timer);
+		this.formatTime(0);
+		this.startTime = 0;
+		this.stopTime = 0;
+		this.isStopped = true;
+	}
+
+	update() {
+		this.formatTime(Date.now() - this.startTime);
+	}
+
+	formatTime(time) {
+		var h  		= time / 1000 / 60 / 60 % 24 | 0;
+		var m  		= time / 1000 / 60 % 60 | 0;
+		var s  		= time / 1000 % 60 % 60 | 0;
+		var ms 		= time % 1000 % 60 % 60 | 0;
+		//var total 	= time / 1000;
+
+		this.hours.innerHTML 		= (h < 10 ? "0" + h : h);
+		this.minutes.innerHTML 		= (m < 10 ? "0" + m : m);
+		this.seconds.innerHTML		= (s < 10 ? "0" + s : s);
+		this.milliseconds.innerHTML	= (ms < 10 ? ":0" + ms : ":" + ms);
+	}
+}
+
+// StopWatch Class
+class StopWatch extends Timer {
+
+	constructor(display, buttons, laps) {
+		super(display, buttons);
+
+		// Lap info
+		this.lapDisplay = laps;
+		this.laps 		= [];
+		this.lapButton  = this.buttons.querySelector(".lap");
+		this.addLapButton();
+	}
+
+	addLapButton() {
+		this.lapButton.addEventListener("click", this.lap.bind(this));
+	}
+
+	lap() {
+		if (this.isStopped) {
+			return;
+		}
+		var lapTime = this.startTime === 0 ? 0 : Date.now() - this.startTime;
+		this.formatLapTime(lapTime)
+		this.laps[this.laps.length] = lapTime;
+	}
+
+	// Override Timer.formatLapTime
+	formatLapTime(time) {
+		var h  		= time / 1000 / 60 / 60 | 0;
+		var m  		= time / 1000 / 60 % 60 | 0;
+		var s  		= time / 1000 % 60 % 60 | 0;
+		var ms 		= time % 1000 % 60 % 60 | 0;
+
+		var format = "Lap " + (this.laps.length+1) + ": "
+				   + (h < 10 ? "0" + h : h) 
+				   + (m < 10 ? ":0" + m : ":" + m)
+				   + (s < 10 ? ":0" + s : ":" + s)
+				   /*+ (ms < 10 ? ":0" + ms : ":" + ms)*/;
+
+		this.lapDisplay.innerHTML = this.laps.length === 0 
+								  ? this.lapDisplay.innerHTML + format 
+								  : this.lapDisplay.innerHTML + "<br>" + format;
+	}
+
+	reset() {
+		super.reset();
+		this.lapDisplay.innerHTML = "";
+	}
+}
+
+class CountDown extends Timer {
+
+	constructor(display, buttons) {
+		super(display, buttons);
+		this.days = display.querySelector(".days");
+		this.addTimeDisplayListener();
+
+	}
+
+	addTimeDisplayListener() {
+		this.days.addEventListener		("blur", (function() { this.updateStartTime(this.days); }).bind(this));
+		this.hours.addEventListener		("blur", (function() { this.updateStartTime(this.hours); }).bind(this));
+		this.minutes.addEventListener	("blur", (function() { this.updateStartTime(this.minutes); }).bind(this));
+		this.seconds.addEventListener	("blur", (function() { this.updateStartTime(this.seconds); }).bind(this));
+
+		this.days.addEventListener		("click", (function() { this.clearInput(this.days); }).bind(this));
+		this.hours.addEventListener		("click", (function() { this.clearInput(this.hours); }).bind(this));
+		this.minutes.addEventListener	("click", (function() { this.clearInput(this.minutes); }).bind(this));
+		this.seconds.addEventListener	("click", (function() { this.clearInput(this.seconds); }).bind(this));
+	}
+
+	clearInput(input) {
+		input.innerHTML = "";
+	}
+
+	updateStartTime(input) {
+		if (isNaN(input.innerHTML))
+			input.textContent = "00";
+		else {
+			var floor = Math.floor(input.textContent);
+			input.textContent = floor < 10 ? "0" + floor : floor;
+		}
+		
+		this.startTime = (this.days.textContent * 1000 * 60 * 60 * 24) 
+					   + (this.hours.textContent * 1000 * 60 * 60)
+					   + (this.minutes.textContent * 1000 * 60)
+					   + (this.seconds.textContent * 1000);
+		this.stopTime = 0;
+		this.formatTime(this.startTime);
+
+	}
+
+	start() {
+		if (this.isStopped && this.startTime > 0) {
+			this.timer = setInterval(this.update.bind(this), 1);
+			this.startTime = this.stopTime === 0 
+						   ? this.startTime + Date.now() 
+						   : this.stopTime + Date.now();
+			this.isStopped = false;
+		}
+	}
+
+	stop() {
+		
+		if (!this.isStopped) {
+			clearInterval(this.timer);
+			this.stopTime = this.startTime - Date.now();
+			this.isStopped = true;
+		}
+	}
+
+	update() {
+		var now = Date.now();
+		if (this.startTime - now <= 0)
+			super.reset();
+		else 
+			this.formatTime(this.startTime - now);
+	}
+
+	formatTime(time) {
+		super.formatTime(time);
+		var d 		= time / 1000 / 60 / 60 / 24 | 0;
+		var h  		= time / 1000 / 60 / 60 % 24 | 0;
+
+		this.days.innerHTML			= (d < 10 ? "0" + d : d);
+		this.hours.innerHTML 		= (h < 10 ? "0" + h : h);
+	}
+}
+
+var groups = document.querySelectorAll(".group");
+var display = document.querySelector(".timer");
+var buttons = document.querySelector(".buttons");
+var laps = document.querySelector(".laps");
+
+console.log(groups.length);
+for (var i = 0; i < groups.length; i++) {
+	switch (i) {
+		case 0:
+			new Timer(groups[i].querySelector(".timer"), groups[i].querySelector(".buttons"));
+			break;
+		case 1:
+			new StopWatch(groups[i].querySelector(".timer"), groups[i].querySelector(".buttons"), groups[i].querySelector(".laps"));
+			break;
+		case 2:
+			new CountDown(groups[i].querySelector(".timer"), groups[i].querySelector(".buttons"));
+			break;
+		default: 
+			new Timer(groups[i].querySelector(".timer"), groups[i].querySelector(".buttons"));
+			break;
+	}	
+}
+
+</script>
+</body>
+</html>

@@ -1,0 +1,91 @@
+Simple JavaScript Timer/StopWatch/CountDown
+
+Focusing on inheritance in JavaScript
+
+------------------------------------------------
+Usage:
+------------------------------------------------
+All of the Timer Objects must have a container element that contains an element with each of the following class names:
+
+hours
+minutes
+seconds
+milliseconds
+
+They must also have a container element that contains all of the corresponding buttons with the following class names:
+
+start
+stop
+reset
+
+* Note that the StopWatch class requires an additional button with the class:
+
+lap
+
+The StopWatch class also requires an element for displaying all of the values recorded for each lap. 
+
+------------------------------------------------
+Timer Example:
+------------------------------------------------
+// [HTML File]
+<div class="timer">
+	<div class="hours">00</div>:
+	<div class="minutes">00</div>:
+	<div class="seconds">00</div>
+	<div class="milliseconds">:00</div>
+</div>
+<div class="buttons">
+	<div class="start">Start</div>
+	<div class="stop">Stop</div>
+	<div class="reset">Reset</div>
+</div>
+
+// [JavaScript File]
+var timer = document.querySelector(".timer");
+var buttons = document.querySelector(".buttons");
+new Timer(timer, buttons);
+
+------------------------------------------------
+StopWatch Example:
+------------------------------------------------
+// [HTML File]
+<div class="timer">
+	<div class="hours">00</div>:
+	<div class="minutes">00</div>:
+	<div class="seconds">00</div>
+	<div class="milliseconds">:00</div>
+</div>
+<div class="buttons">
+	<div class="start">Start</div>
+	<div class="stop">Stop</div>
+	<div class="reset">Reset</div>
+	<div class="lap">Lap</div>
+</div>
+<div class="laps"></div>
+
+// [JavaScript File]
+var timer = document.querySelector(".timer");
+var buttons = document.querySelector(".buttons");
+var laps = document.querySelector(".laps");
+new StopWatch(timer, buttons, laps);
+
+------------------------------------------------
+CountDown Example:
+------------------------------------------------
+// [HTML File]
+<div class="timer">
+	<div class="hours">00</div>:
+	<div class="minutes">00</div>:
+	<div class="seconds">00</div>
+	<div class="milliseconds">:00</div>
+</div>
+<div class="buttons">
+	<div class="start">Start</div>
+	<div class="stop">Stop</div>
+	<div class="reset">Reset</div>
+</div>
+
+// [JavaScript File]
+var timer = document.querySelector(".timer");
+var buttons = document.querySelector(".buttons");
+new CountDown(timer, buttons);
